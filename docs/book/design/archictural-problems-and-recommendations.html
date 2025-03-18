@@ -1,0 +1,433 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Architectural Problems and Recommendations - MapLibre Native Developer Documentation</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../diff.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">MapLibre Native Developer Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <style>
+.mdbook-alerts {
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  border-left: 0.25em solid var(--mdbook-alerts-color);
+}
+
+.mdbook-alerts > *:first-child {
+  margin-top: 0;
+}
+
+.mdbook-alerts > *:last-child {
+  margin-bottom: 0;
+}
+
+.mdbook-alerts-title {
+  display: flex;
+  font-weight: 600;
+  align-items: center;
+  line-height: 1;
+  color: var(--mdbook-alerts-color);
+  text-transform: capitalize;
+}
+
+.mdbook-alerts-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.2em;
+  background-color: currentColor;
+  -webkit-mask: no-repeat center / 100%;
+  mask: no-repeat center / 100%;
+  -webkit-mask-image: var(--mdbook-alerts-icon);
+  mask-image: var(--mdbook-alerts-icon);
+}
+
+.mdbook-alerts-note {
+  --mdbook-alerts-color: rgb(9, 105, 218);
+  /* https://icon-sets.iconify.design/material-symbols/info-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 17q.425 0 .713-.288T13 16v-4q0-.425-.288-.712T12 11q-.425 0-.712.288T11 12v4q0 .425.288.713T12 17m0-8q.425 0 .713-.288T13 8q0-.425-.288-.712T12 7q-.425 0-.712.288T11 8q0 .425.288.713T12 9m0 13q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-tip {
+  --mdbook-alerts-color: rgb(26, 127, 55);
+  /* https://icon-sets.iconify.design/material-symbols/lightbulb-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 22q-.825 0-1.412-.587T10 20h4q0 .825-.587 1.413T12 22m-3-3q-.425 0-.712-.288T8 18q0-.425.288-.712T9 17h6q.425 0 .713.288T16 18q0 .425-.288.713T15 19zm-.75-3q-1.725-1.025-2.738-2.75T4.5 9.5q0-3.125 2.188-5.312T12 2q3.125 0 5.313 2.188T19.5 9.5q0 2.025-1.012 3.75T15.75 16zm.6-2h6.3q1.125-.8 1.738-1.975T17.5 9.5q0-2.3-1.6-3.9T12 4Q9.7 4 8.1 5.6T6.5 9.5q0 1.35.613 2.525T8.85 14M12 14"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-important {
+  --mdbook-alerts-color: rgb(130, 80, 223);
+  /* https://icon-sets.iconify.design/material-symbols/chat-info-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 7q.425 0 .713-.288T13 6q0-.425-.288-.712T12 5q-.425 0-.712.288T11 6q0 .425.288.713T12 7m0 8q.425 0 .713-.288T13 14v-4q0-.425-.288-.712T12 9q-.425 0-.712.288T11 10v4q0 .425.288.713T12 15m-6 3l-2.3 2.3q-.475.475-1.088.213T2 19.575V4q0-.825.588-1.412T4 2h16q.825 0 1.413.588T22 4v12q0 .825-.587 1.413T20 18zm-.85-2H20V4H4v13.125zM4 16V4z"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-warning {
+  --mdbook-alerts-color: rgb(154, 103, 0);
+  /* https://icon-sets.iconify.design/material-symbols/warning-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M2.725 21q-.275 0-.5-.137t-.35-.363q-.125-.225-.137-.488t.137-.512l9.25-16q.15-.25.388-.375T12 3q.25 0 .488.125t.387.375l9.25 16q.15.25.138.513t-.138.487q-.125.225-.35.363t-.5.137zm1.725-2h15.1L12 6zM12 18q.425 0 .713-.288T13 17q0-.425-.288-.712T12 16q-.425 0-.712.288T11 17q0 .425.288.713T12 18m0-3q.425 0 .713-.288T13 14v-3q0-.425-.288-.712T12 10q-.425 0-.712.288T11 11v3q0 .425.288.713T12 15m0-2.5"%2F%3E%3C%2Fsvg%3E');
+}
+
+.mdbook-alerts-caution {
+  --mdbook-alerts-color: rgb(207, 34, 46);
+  /* https://icon-sets.iconify.design/material-symbols/brightness-alert-outline-rounded/ */
+  --mdbook-alerts-icon: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="currentColor" d="M12 17q.425 0 .713-.288T13 16q0-.425-.288-.712T12 15q-.425 0-.712.288T11 16q0 .425.288.713T12 17m0-4q.425 0 .713-.288T13 12V8q0-.425-.288-.712T12 7q-.425 0-.712.288T11 8v4q0 .425.288.713T12 13m-3.35 7H6q-.825 0-1.412-.587T4 18v-2.65L2.075 13.4q-.275-.3-.425-.662T1.5 12q0-.375.15-.737t.425-.663L4 8.65V6q0-.825.588-1.412T6 4h2.65l1.95-1.925q.3-.275.663-.425T12 1.5q.375 0 .738.15t.662.425L15.35 4H18q.825 0 1.413.588T20 6v2.65l1.925 1.95q.275.3.425.663t.15.737q0 .375-.15.738t-.425.662L20 15.35V18q0 .825-.587 1.413T18 20h-2.65l-1.95 1.925q-.3.275-.662.425T12 22.5q-.375 0-.737-.15t-.663-.425zm.85-2l2.5 2.5l2.5-2.5H18v-3.5l2.5-2.5L18 9.5V6h-3.5L12 3.5L9.5 6H6v3.5L3.5 12L6 14.5V18zm2.5-6"%2F%3E%3C%2Fsvg%3E');
+}
+
+</style>
+<h1 id="architectural-problems--recommendations"><a class="header" href="#architectural-problems--recommendations">Architectural Problems &amp; Recommendations</a></h1>
+<p>Up until now, this document focused solely on the state of MapLibre
+Native at the time of writing. This section speaks of possible future
+improvements for MapLibre Native from an architectural point of view.
+Before that, let's look into the architectural challenges MapLibre
+Native is facing<sup class="footnote-reference"><a href="#18">1</a></sup>:</p>
+<h2 id="renderer-coupled-with-opengl"><a class="header" href="#renderer-coupled-with-opengl">Renderer coupled with OpenGL</a></h2>
+<p>The renderer component is tightly coupled to OpenGL ES. It uses OpenGL
+ES as its only preferred rendering backend. Furthermore, MapLibre
+Native does not have a clear separation between the following:</p>
+<ol>
+<li>
+<p>The logical responsibility of rendering a map tile. This involves
+sourcing layers, applying styles, fetching glyphs and sprites for a
+map tile.</p>
+</li>
+<li>
+<p>Rendering a prepared map tile in a rendering loop for a graphics API
+such as OpenGL.</p>
+</li>
+</ol>
+<p>The current rendering loop is only implemented for OpenGL. In 2018,
+Apple deprecated OpenGL for both iOS 12 and macOS in favour of Metal.
+Metal is Apple's own 3D graphics API. MapLibre Native's sole
+dependency on OpenGL ES puts it in a risk of deprecation for iOS
+customers.</p>
+<h2 id="lack-of-support-for-other-map-projections-except-web-mercator"><a class="header" href="#lack-of-support-for-other-map-projections-except-web-mercator">Lack of support for other map projections except Web Mercator</a></h2>
+<p>MapLibre Native supports Web Mercator (EPSG:3857) as its only
+supported projection. This fulfills most of the web and device map
+needs. At the time of writing, modern map renderers such as Google Maps
+and Mapbox GL offers 3D globe, conic, and rectangular projections too.
+At the time of writing, MapLibre Native renderer component does not
+have an architectural separation for supporting multiple projections and
+coordinate reference systems.</p>
+<h2 id="inconsistency-among-platforms"><a class="header" href="#inconsistency-among-platforms">Inconsistency among platforms</a></h2>
+<p>Each MapLibre Native platform has a Map View and Map Renderer
+component. The inconsistency introduced due to differences in
+concurrency model and programming language is unavoidable. But from an
+abstractions point of view there are inconsistencies that can be
+mitigated:</p>
+<ol>
+<li>
+<p>Map Configuration is modeled inside MapLibre Native Core, the
+shared cross platform codebase. Each platform creates its own
+configuration class and creates a shadow native object. The native
+configuration object is consistent across platforms but the platform
+specific configuration is not.</p>
+</li>
+<li>
+<p>MapLibre Native has a sister repository named MapLibre GL JS. At
+the time of writing, MapLibre GL JS does not share any code with
+MapLibre Native except shaders, the style specification, and
+render test fixtures. This creates a feature inconsistency across
+web and device experience for customers. The rendering architecture
+is also different between Web and Mobile. MapLibre GL JS currently
+uses WebGL through completely different implementations for Map,
+Style, Layers, Glyph, and TileWorker.</p>
+</li>
+<li>
+<p>MapLibre Rust is an experimental initiative to create a new MapLibre
+implementation in Rust, entirely based on <em>WebGPU</em>. At the time of
+writing, <em>WebGPU</em> is a young platform that exposes modern computer
+graphics capabilities, especially Direct3D 12, Metal, and Vulkan
+through a shared API. It has promise, but the API at the time of
+writing only supports ChromeOS, macOS, and Windows 10. Technically,
+it can be used with Android and iOS but these platforms do not
+provide out of the box support for it. This also has created a
+divergent experience for customers when it comes to using MapLibre
+Native.</p>
+</li>
+</ol>
+<h2 id="lack-of-documentation"><a class="header" href="#lack-of-documentation">Lack of documentation</a></h2>
+<p>Last but not the least, MapLibre Native suffers from a general lack
+of documentation. This includes current state of the code architecture,
+continuous integration and development, testing strategy, and a roadmap
+for future improvement. This document intends to address the first.</p>
+<h2 id="recommendations"><a class="header" href="#recommendations">Recommendations</a></h2>
+<p>This document proposes the following component architecture for MapLibre
+Native to address the architectural shortcomings.</p>
+<p><img src="media/proposed-architecture-of-maplibre-gl.png" alt="" />
+<em>Figure 4: Proposed Architecture of MapLibre Native</em></p>
+<p>Proposed architecture of MapLibre Native in Figure 4 addresses the
+aforementioned problems by:</p>
+<h4 id="modular-rendering"><a class="header" href="#modular-rendering">Modular Rendering</a></h4>
+<p>Introducing modularized rendering through <em>Unified Rendering Interface</em>.
+Unified Rendering Interface component will be responsible for
+implementing different graphics API workers for any tile workers. Each
+of these rendering workers will use platform specific shaders. This
+document does not dive deep into how these shaders will be produced or
+orchestrated. The problem <em>Unified Rendering Interface</em> solves is
+architecturally drawing a boundary between</p>
+<ol>
+<li>
+<p>The responsibility of rendering a map tile through GPU and,</p>
+</li>
+<li>
+<p>Gathering all layers necessary to render a map tile through <em>tile
+workers</em>.</p>
+</li>
+</ol>
+<h4 id="projector-component"><a class="header" href="#projector-component">Projector Component</a></h4>
+<p>Introducing a new component named <em>Projector.</em> A <em>projector</em> component
+is responsible for adding multiple projection and coordinate system
+support for map tiles. Projector will take the <em>features</em> to be rendered
+as an input and project the layer to a projection or coordinate
+reference system. Projected world coordinates will then be translated to
+native device coordinates.</p>
+<p>One example of introducing new component is supporting 3D maps in the
+future. This could mean rendering map tiles on a spherical globe instead
+of a flat 3D plane. At the time of writing MapLibre Native supports
+2.5D extrusion for buildings and terrain tiles. Supporting confidential
+datums like <em>GCJ-02</em> can also be achieved through this.</p>
+<h4 id="future-convergence-with-webgpu"><a class="header" href="#future-convergence-with-webgpu">Future Convergence with WebGPU</a></h4>
+<p>This document acknowledges the value proposition Rust brings. At the
+time of writing, MapLibre Native Core is written in C++. Albeit written
+in C++, MapLibre Native code relies on immutable message passing between
+renderer and tile workers. Private functions also follow the <em>C++ move
+semantics</em>. This means, each private function takes ownership of the
+arguments passed to the function by copying it to a new memory.</p>
+<p>Rust as a programming language enforces such intentions through compile
+time safety checks. Provided Rust Foreign Function<sup class="footnote-reference"><a href="#19">2</a></sup> Interface allows
+interoperability with Rust, this document proposes the following to be
+done in sequence:</p>
+<ol>
+<li>
+<p>At first, this document proposes to implement <em><strong>Modularized
+Rendering</strong></em> in C++ for MapLibre Native. This document also
+proposes that Unified Rendering Interface will keep the door open
+for a <em>WebGPU</em> backed renderer in MapLibre Native. This could address
+the divergence of web and native platforms in the future. The WebGPU
+renderer might be possible to compiled to WebAssembly and enable
+WebGPU powered rendering for browsers. This paves the path forward for
+a single unified renderer implementation for web and mobile devices.</p>
+</li>
+<li>
+<p>After the delivery of <em><strong>Modularized Rendering</strong></em>, this document
+proposes to eventually migrate <em>Style, Layers, Text, Glyphs,
+Projector, Tile Worker, and Map</em> component to be migrated to Rust.</p>
+</li>
+<li>
+<p>Finally, this document proposes to migrate Unified Rendering
+Interface and its implementations to Rust. This will completely
+transform MapLibre Native from a C++ ecosystem to a Rust
+ecosystem.</p>
+</li>
+</ol>
+<p>Following the above steps will merge towards a single MapLibre
+implementation for web and native.</p>
+<hr />
+<div class="footnote-definition" id="18"><sup class="footnote-definition-label">1</sup>
+<p>This document deliberately does not speak of problems regarding
+build and infrastructure of MapLibre Native. They will be handled
+in individual design PR requests / documents.</p>
+</div>
+<div class="footnote-definition" id="19"><sup class="footnote-definition-label">2</sup>
+<p>Rust Foreign Function Interface allows interop bindings and code
+that needs to exchange C-Like strings with other programming
+languages.</p>
+</div>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../design/expressions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../design/android-map-rendering-data-flow.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../design/expressions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../design/android-map-rendering-data-flow.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
